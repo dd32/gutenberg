@@ -148,7 +148,7 @@ function getCaretRect() {
 
 function getTextBeforeSelection( record ) {
 	const text = getTextContent( record );
-	let start = record.selection.start;
+	let { start = 0 } = record.selection;
 
 	if ( Array.isArray( start ) ) {
 		start = start[ 1 ];

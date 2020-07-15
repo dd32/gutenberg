@@ -168,6 +168,14 @@ module.exports = async function readConfig( configPath ) {
 			workDirectoryPath,
 			'docker-compose.yml'
 		),
+		wordpressDockerfile: path.resolve(
+			workDirectoryPath,
+			'Dockerfile-wordpress'
+		),
+		cliDockerfile: path.resolve(
+			workDirectoryPath,
+			'Dockerfile-cli'
+		),
 		configDirectoryPath,
 		workDirectoryPath,
 		detectedLocalConfig,

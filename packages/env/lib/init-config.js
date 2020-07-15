@@ -32,6 +32,28 @@ module.exports = async function initConfig( { spinner, debug } ) {
 
 	await fs.mkdir( config.workDirectoryPath, { recursive: true } );
 
+	// Set the www-data user within the container to that which started the env.
+	const dockerfile = "ARG TARGET_UID\n" +
+		"ARG TARGET_GID\n\n" +
+		"RUN " +
+			"( which apk ) && apk add --no-cache shadow; \\\n" + // Alpine images need shadow for usermod/groupmod
+			"EXISTING_USER=$( getent passwd $TARGET_UID | cut -d: -f1 ); \\\n" +
+			"EXISTING_GROUP=$( getent group $TARGET_GID | cut -d: -f1 ); \\\n" +
+			'( test "$EXISTING_USER" && test "$EXISTING_USER" != "www-data" ) && usermod -u 9999 $EXISTING_USER ;\\\n' +
+			'( test "$EXISTING_GROUP" && test "$EXISTING_GROUP" != "www-data" ) && groupmod -g 9999 $EXISTING_GROUP ;\\\n' +
+			'groupmod -g $TARGET_GID www-data ;\\\n' +
+			'usermod -u $TARGET_UID -g $TARGET_GID www-data ;\\\n' +
+			"chown -R www-data:www-data /var/www/html\n";
+
+	await fs.writeFile(
+		config.wordpressDockerfile,
+		"FROM wordpress\n" + dockerfile
+	);
+	await fs.writeFile(
+		config.cliDockerfile,
+		"FROM wordpress:cli\n" + dockerfile
+	);
+
 	const dockerComposeConfig = buildDockerComposeConfig( config );
 	await fs.writeFile(
 		config.dockerComposeConfigPath,

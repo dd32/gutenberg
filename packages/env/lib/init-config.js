@@ -36,14 +36,25 @@ module.exports = async function initConfig( { spinner, debug } ) {
 	const dockerfile = "ARG TARGET_UID\n" +
 		"ARG TARGET_GID\n\n" +
 		"RUN " +
-			"( which apk ) && apk add --no-cache shadow; \\\n" + // Alpine images need shadow for usermod/groupmod
-			"EXISTING_USER=$( getent passwd $TARGET_UID | cut -d: -f1 | grep -Ev '(root|www-data)' ); \\\n" + // Find any existing users, other than root and www-data who are using that ID.
+			// Alpine images need shadow for usermod/groupmod
+			"( which apk ) && apk add --no-cache shadow; \\\n" +
+
+			// Find any existing users, other than root and www-data who are using that ID.
+			"EXISTING_USER=$( getent passwd $TARGET_UID | cut -d: -f1 | grep -Ev '(root|www-data)' ); \\\n" +
 			"EXISTING_GROUP=$( getent group $TARGET_GID | cut -d: -f1 | grep -Ev '(root|www-data)' ); \\\n" +
-			'( test -n "$EXISTING_USER" ) && usermod -u 9999 $EXISTING_USER; \\\n' + // If there's an existing user/group using those IDs, alter their ID to 9999.
+
+			// If there's an existing user/group using those IDs, alter their ID to 9999.
+			'( test -n "$EXISTING_USER" ) && usermod -u 9999 $EXISTING_USER; \\\n' +
 			'( test -n "$EXISTING_GROUP" ) && groupmod -g 9999 $EXISTING_GROUP; \\\n' +
-			'( test -n "$TARGET_GID" && test $TARGET_GID -gt 0 ) && groupmod -g $TARGET_GID www-data; \\\n' + // Change the Group ID of www-data to that of the wp-env user.
-			'( test -n "$TARGET_UID" && test $TARGET_UID -gt 0 ) && usermod -u $TARGET_UID -g $TARGET_GID www-data; \\\n' + // Change the User ID & add them to the www-data group to that of the wp-env user.
-			"chown -R www-data:www-data /var/www/html\n"; // Reset ownership of the files in the html directory, if needed, this is mostly here as the parent image may have set chown'd to the old www-data IDs.
+
+			// Change the Group ID of www-data to that of the wp-env user.
+			'( test -n "$TARGET_GID" && test $TARGET_GID -gt 0 ) && groupmod -g $TARGET_GID www-data; \\\n' +
+
+			// Change the User ID & add them to the www-data group to that of the wp-env user.
+			'( test -n "$TARGET_UID" && test $TARGET_UID -gt 0 ) && usermod -u $TARGET_UID -g $TARGET_GID www-data; \\\n' +
+
+			// Reset ownership of the files in the html directory, if needed, this is mostly here as the parent image may have set chown'd to the old www-data IDs.
+			"chown -R www-data:www-data /var/www/html\n";
 
 	await fs.writeFile(
 		config.wordpressDockerfile,

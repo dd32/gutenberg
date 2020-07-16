@@ -116,6 +116,7 @@ module.exports = function buildDockerComposeConfig( config ) {
 
 	const localUser = os.userInfo().uid;
 	const localGroup = os.userInfo().gid;
+	const cliUser = localUser + ':' + localGroup;
 
 	const wordpressBuild = {
 		context: '.',
@@ -168,13 +169,13 @@ module.exports = function buildDockerComposeConfig( config ) {
 				depends_on: [ 'wordpress' ],
 				build: cliBuild,
 				volumes: developmentMounts,
-				user: localUser + ':' + localGroup,
+				user: cliUser,
 			},
 			'tests-cli': {
 				depends_on: [ 'tests-wordpress' ],
 				build: cliBuild,
 				volumes: testsMounts,
-				user: localUser + ':' + localGroup,
+				user: cliUser,
 			},
 			composer: {
 				image: 'composer',

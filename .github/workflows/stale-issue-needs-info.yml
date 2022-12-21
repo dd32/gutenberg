@@ -9,7 +9,7 @@ jobs:
         if: ${{ github.repository == 'WordPress/gutenberg' }}
 
         steps:
-            - uses: actions/stale@5ebf00ea0e4c1561e9b43a292ed34424fb1d4578 # v6.0.1
+            - uses: actions/stale@6f05e4244c9a0b2ed3401882b05d701dd0a7289b # v7.0.0
               with:
                   repo-token: ${{ secrets.GITHUB_TOKEN }}
                   stale-issue-message: 'Help us move this issue forward. This issue is being marked stale since it has no activity after 15 days of requesting more information. Please add info requested so we can help move the issue forward. Note: The triage policy is to close stale issues that need more info and no response after 2 weeks.'

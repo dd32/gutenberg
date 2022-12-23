@@ -40,7 +40,7 @@ jobs:
             - run: npm ci
 
             - name: Restore Gradle cache
-              uses: actions/cache@56461b9eb0f8438fd15c7a9968e3c9ebb18ceff1 # v3.0.10
+              uses: actions/cache@c1a5de879eb890d062a85ee0252d6036480b1fe2 # v3.2.1
               with:
                   path: ~/.gradle/caches
                   key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}

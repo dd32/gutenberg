@@ -296,7 +296,7 @@ jobs:
               run: echo "date=$(/bin/date -u --date='last Mon' "+%F")" >> $GITHUB_OUTPUT
 
             - name: Cache PHPCS scan cache
-              uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
+              uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
               with:
                   path: .cache/phpcs.json
                   key: ${{ runner.os }}-date-${{ steps.get-date.outputs.date }}-phpcs-cache-${{ hashFiles('**/composer.json', 'phpcs.xml.dist') }}
